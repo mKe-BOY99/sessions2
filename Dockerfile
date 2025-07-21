@@ -1,14 +1,32 @@
-FROM debian:bullseye
+# Soti sou Node 20 slim pou minimize image size
+FROM node:20-slim
+
+# Mete non itilizatè
 USER root
+
+# Enstale depandans Debian
 RUN apt-get update && \
     apt-get install -y ffmpeg webp git && \
-    apt-get upgrade -y && \
+    npm install -g yarn pm2 && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-USER node
-RUN git clone https://github.com/takudzwa07/SB-PAIR.git /home/node/SB-PAIR
-WORKDIR /home/node/SB-PAIR
-RUN chmod -R 777 /home/node/SB-PAIR/
+
+# Klone repo a
+RUN git clone https://github.com/mKe-BOY99/sessions2.git /home/node/sessions2
+
+WORKDIR /home/node/sessions2
+
+# Mete dwa sou dosye yo
+RUN chmod -R 755 .
+
+# Enstale depandans npm/yarn
 RUN yarn install --network-concurrency 1
+
+# Deklare pò
 EXPOSE 3000
+
+# Mete anviwònman
 ENV NODE_ENV=production
-CMD ["npm", "start"]
+
+# Kòmanse ak PM2 jan scripts yo mande
+CMD ["pm2-runtime", "index.js", "--name", "gifted"]
